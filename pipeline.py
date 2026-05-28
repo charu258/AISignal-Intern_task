@@ -1,45 +1,49 @@
 import json
-from openai import OpenAI
+from google import genai
+from google.genai import types
 from schemas import UserIntent, CompiledAppConfig
 
-client = OpenAI()
+# Automatically picks up the GEMINI_API_KEY environment variable
+client = genai.Client()
 
 class GenerationPipeline:
-    def __init__(self, model: str = "gpt-4o-mini"):
+    def __init__(self, model: str = "gemini-2.5-flash"):
         self.model = model
 
     def stage_1_extract_intent(self, user_prompt: str) -> UserIntent:
-        """Parses vague user text into clean entities and roles.""" [cite: 24, 25]
-        response = client.beta.chat.completions.parse(
+        """Parses vague user text into clean entities and roles."""
+        response = client.models.generate_content(
             model=self.model,
-            messages=[
-                {"role": "system", "content": "You are a product analyst compiler. Extract structural requirements from natural language."},
-                {"role": "user", "content": user_prompt}
-            ],
-            response_format=UserIntent,
-            temperature=0.0
+            contents=user_prompt,
+            config=types.GenerateContentConfig(
+                system_instruction="You are a product analyst compiler. Extract structural requirements from natural language.",
+                response_mime_type="application/json",
+                response_schema=UserIntent,
+                temperature=0.0
+            ),
         )
-        return response.choices[0].message.parsed
+        return UserIntent.model_validate_json(response.text)
 
     def stage_2_3_4_compile_system(self, intent: UserIntent, context_history: str = "") -> CompiledAppConfig:
-        """Translates structural intent into a fully realized architecture blueprint across layers.""" [cite: 26, 28, 31, 37]
-        system_prompt = (
+        """Translates structural intent into a fully realized architecture blueprint across layers."""
+        system_instruction = (
             "You are a Senior Systems Architect and software compiler. Generate a highly integrated, production-grade schema architecture "
             "based strictly on the extracted structural intent. Ensure strict relational mapping: UI components must map exactly to defined API "
-            "endpoints, and API endpoints must cleanly match the structural entity names and attributes of your database columns." [cite: 46, 48, 49]
+            "endpoints, and API endpoints must cleanly match the structural entity names and attributes of your database columns."
         )
         
         user_content = f"Target Intent: {intent.model_dump_json(indent=2)}"
         if context_history:
             user_content += f"\n\nCRITICAL FIX REQUIRED: Your previous iteration failed compilation due to these explicit errors:\n{context_history}\nFix the mismatch and regenerate perfectly conforming schemas."
 
-        response = client.beta.chat.completions.parse(
+        response = client.models.generate_content(
             model=self.model,
-            messages=[
-                {"role": "system", "content": system_prompt},
-                {"role": "user", "content": user_content}
-            ],
-            response_format=CompiledAppConfig,
-            temperature=0.0
+            contents=user_content,
+            config=types.GenerateContentConfig(
+                system_instruction=system_instruction,
+                response_mime_type="application/json",
+                response_schema=CompiledAppConfig,
+                temperature=0.0
+            ),
         )
-        return response.choices[0].message.parsed
+        return CompiledAppConfig.model_validate_json(response.text)

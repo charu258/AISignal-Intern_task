@@ -3,7 +3,7 @@ from schemas import CompiledAppConfig
 class VirtualAppRuntime:
     @staticmethod
     def simulate_execution(config: CompiledAppConfig) -> bool:
-        """Simulates launching the schema app context and checks for fatal execution crashes.""" [cite: 75]
+        """Simulates launching the schema app context and checks for fatal execution crashes.""" 
         try:
             # 1. Simulate DB Engine Table Spin-up
             catalog = {}

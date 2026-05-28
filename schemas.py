@@ -60,7 +60,7 @@ class AuthSchema(BaseModel):
 class CompiledAppConfig(BaseModel):
     app_name: str
     intent_snapshot: UserIntent
-    database_schema: DatabaseSchema [cite: 18, 35]
-    api_schema: ApiSchema [cite: 17, 34]
-    ui_schema: UiSchema [cite: 16, 33]
-    auth_schema: AuthSchema [cite: 19, 36]
+    database_schema: DatabaseSchema 
+    api_schema: ApiSchema 
+    ui_schema: UiSchema 
+    auth_schema: AuthSchema 
