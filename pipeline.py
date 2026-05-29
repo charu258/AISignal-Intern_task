@@ -3,8 +3,16 @@ from google import genai
 from google.genai import types
 from schemas import UserIntent, CompiledAppConfig
 
-# Automatically picks up the GEMINI_API_KEY environment variable
-client = genai.Client()
+import os
+import streamlit as st
+
+# Check environment variables first (like Streamlit secrets), 
+# otherwise look for a key saved in the Streamlit UI session state
+api_key = os.environ.get("GEMINI_API_KEY") or st.session_state.get("user_api_key")
+
+# Pass the key to the client. If it's missing, pass a dummy string 
+# so it boots safely instead of crashing the whole container!
+client = genai.Client(api_key=api_key or "MISSING_KEY")
 
 class GenerationPipeline:
     def __init__(self, model: str = "gemini-2.5-flash"):
