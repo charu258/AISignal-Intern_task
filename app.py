@@ -6,7 +6,7 @@ from test_suite import run_evaluation_suite
 
 strl.set_page_config(layout="wide", page_title="AI App Compiler Dashboard")
 
-strl.title("⚙️ AI Software Compiler & Engine Layer")
+strl.title(" AI Software Compiler & Engine Layer")
 strl.caption("Natural Language Prompt → Highly Validated Executable App Architecture Schema")
 
 @strl.cache_resource
@@ -16,7 +16,7 @@ def get_engine():
 
 engine = get_engine()
 
-tab1, tab2 = strl.tabs(["🎮 Compiler Terminal", "📊 Evaluation Suite Metrics"])
+tab1, tab2 = strl.tabs([" Compiler Terminal", " Evaluation Suite Metrics"])
 
 with tab1:
     strl.subheader("Execute Single Compilation")
